@@ -1,25 +1,85 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Component, useEffect, useReducer, useState} from 'react';
 
-function App() {
+
+const reducer=(state,action)=>{
+  switch (action.type){
+    case 'SET_USER':
+      return action.payload;
+
+    case 'CHANGE_PHONE':
+      //повертає об'єкт
+      return {
+        ...state,//копіюємо весь наш старий об'єкт
+        phone: action.payload //та змінюємо його поле title
+      }
+
+
+    default:
+      return state;
+
+  }
+}
+
+const initialState={
+  name:'',
+  email:'',
+  phone:''
+}
+export default function App(){
+  const [counter, setCounter] = useState(0);
+  // const [user, setUser] = useState()
+  const [state,dispatch]=useReducer(reducer,initialState);
+
+  // useEffect(() => {
+  //     fetch(`https://jsonplaceholder.typicode.com/users/${counter}`).then((value) => value.json()).then((json) => setUser(json));
+  // }, [counter])
+
+  useEffect(() => {
+
+    fetch(`https://jsonplaceholder.typicode.com/users/${counter}`)
+        .then((value) => value.json())
+        .then((json) =>{
+          dispatch({type:'SET_USER',payload:json})
+        });
+
+  }, [counter])
+
+  const onClickHandler = () => {
+    setCounter(counter + 1);
+  }
+
+  const changePhone=()=>{
+    dispatch({type:'CHANGE_PHONE',payload:Math.random()})
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div>
+        <h1>Counter value:{counter}</h1>
+        <button onClick={onClickHandler}>Inc</button>
+        <button onClick={changePhone}>Change phone</button>
+        {
+          // user && (<>
+          //         Name:{user.name}
+          //     </>
+          // )
+
+
+
+
+          state && (
+              <><br/>
+                Name: {state.name}
+                <br/>
+                Email:  {state.email}
+                <br/>
+                Phone:  {state.phone}
+              </>
+          )
+
+        }
+
+
+      </div>
   );
 }
 
-export default App;
